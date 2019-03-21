@@ -1,0 +1,14 @@
+[Master]
+
+disable=
+    attribute-defined-outside-init,
+    duplicate-code,
+    fixme,
+    invalid-name,
+    missing-docstring,
+    protected-access,
+    too-many-locals,
+    too-few-public-methods,
+    relative-beyond-top-level,
+    # handled by black
+    format
