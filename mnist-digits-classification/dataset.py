@@ -6,7 +6,7 @@ from keras import utils
 
 cache_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../.ml-sandbox-cache');
 
-def load_file(url, filename, is_data):
+def load_file(url, filename, unrolled, is_data):
   cache_filepath = os.path.join(cache_dir, filename)
 
   if not os.path.exists(cache_filepath):
@@ -25,25 +25,33 @@ def load_file(url, filename, is_data):
   else:
     item_size = 1
 
-  data = np.zeros((n_items, item_size))
+  if not is_data or unrolled:
+    data = np.zeros((n_items, item_size))
+  else:
+    data = np.zeros((n_items, n_rows, n_cols, 1))
 
   for i in range(n_items):
-    data[i, :] = np.frombuffer(fd.read(item_size), dtype=np.uint8)
+    item = np.frombuffer(fd.read(item_size), dtype=np.uint8)
+    
+    if is_data and not unrolled:
+      item = item.reshape((n_rows, n_cols, 1))
+
+    data[i] = item 
 
   if is_data:
     return data / 255
-  else:
-    return utils.to_categorical(data)
+  
+  return utils.to_categorical(data)
 
-def load():
+def load(unrolled = True):
 
   if not os.path.exists(cache_dir):
     os.mkdir(cache_dir)
 
-  X = load_file('http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz', 'mnist-training-data.gz', True)
-  Y = load_file('http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz', 'mnist-training-labels.gz', False)
-  X_test = load_file('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz', 'mnist-test-data.gz', True)
-  Y_test = load_file('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', 'mnist-test-labels.gz', False)
+  X = load_file('http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz', 'mnist-training-data.gz', unrolled, True)
+  Y = load_file('http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz', 'mnist-training-labels.gz', unrolled, False)
+  X_test = load_file('http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz', 'mnist-test-data.gz', unrolled, True)
+  Y_test = load_file('http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz', 'mnist-test-labels.gz', unrolled, False)
 
   return X, Y, X_test, Y_test
   
