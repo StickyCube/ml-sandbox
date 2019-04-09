@@ -3,10 +3,9 @@
 """Iris classification by logistic regression
 
 The following model loads the iris dataset from `sklean` and trains
-a a network with a single softmax layer - analagous to simple logistic regression
-
+a network with a single softmax layer - analagous to simple logistic regression
 """
-from keras_tqdm import TQDMCallback
+
 from keras import layers, losses, optimizers, Sequential
 import dataset
 
@@ -20,22 +19,12 @@ def train_model(X, Y, learning_rate, num_epochs):
 
   optimizer = optimizers.Adam(lr=learning_rate)
 
-  model.compile(optimizer,
-    loss=losses.categorical_crossentropy,
-    metrics=['accuracy'])
+  model.compile(optimizer, loss=losses.categorical_crossentropy, metrics=['accuracy'])
 
   model.summary()
   
-  print('\n\n')
-
-  history = model.fit(X, Y, 
-    verbose=0,
-    callbacks=[TQDMCallback()],
-    epochs=num_epochs, 
-    validation_split=0.2)
+  history = model.fit(X, Y, epochs=num_epochs, validation_split=0.2)
   
-  print('\n\n')
-
   return model, history
 
 def main(learning_rate, num_epochs):

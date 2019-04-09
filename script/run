@@ -1,23 +1,22 @@
 #! /usr/bin/env bash
 
-IMAGE_NAME="ml-cpu"
 TF_TAG="1.13.1-py3"
+IMAGE_TAG="cpu"
 RUNTIME=""
 
 for arg in "$@"; do
   case "$arg" in
     -g|--gpu*)
-      IMAGE_NAME="ml-gpu"
       TF_TAG="1.13.1-gpu-py3"
+      IMAGE_TAG="gpu"
       RUNTIME="--runtime=nvidia"
       ;;
   esac
 done
 
-docker build --build-arg tensorflow_tag=$TF_TAG --tag $IMAGE_NAME `pwd`
+docker build --build-arg tensorflow_tag=$TF_TAG --tag ml-sandbox:$IMAGE_TAG `pwd`
 
 # -u set user id
-# --env and first few volumes give access to X11 on host so we can plot using matplotlib 
 # -v -w mount cwd and cd into it
 # -it interactive tty
 # --rm auto remove on exit
@@ -25,15 +24,10 @@ docker build --build-arg tensorflow_tag=$TF_TAG --tag $IMAGE_NAME `pwd`
 
 docker run \
   -u $(id -u):$(id -g) \
-  --env="DISPLAY" \
-  -v "/etc/group:/etc/group:ro" \
-  -v "/etc/passwd:/etc/passwd:ro" \
-  -v "/etc/shadow:/etc/shadow:ro" \
-  -v "/etc/sudoers.d:/etc/sudoers.d:ro" \
-  -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
   -v `pwd`:`pwd` \
   -w `pwd` \
   -it \
   --rm \
-  $RUNTIME $IMAGE_NAME \
+  $RUNTIME \
+  ml-sandbox:$IMAGE_TAG \
   bash

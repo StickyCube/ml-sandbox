@@ -3,10 +3,9 @@
 """Iris classification by neural network
 
 The following model loads the iris dataset
-a a network with 2 hidden layers
-
+and trains a network with 2 hidden layers
 """
-from keras_tqdm import TQDMCallback
+
 from keras import layers, regularizers, losses, optimizers, Sequential
 import dataset
 
@@ -37,16 +36,8 @@ def train_model(X, Y, learning_rate, num_epochs, regularization_parameter):
 
   model.summary()
   
-  print('\n\n')
-
-  history = model.fit(X, Y, 
-    verbose=0, 
-    callbacks=[TQDMCallback()], 
-    epochs=num_epochs, 
-    validation_split=0.2)
+  history = model.fit(X, Y, epochs=num_epochs, validation_split=0.2)
   
-  print('\n\n')
-
   return model, history
 
 
