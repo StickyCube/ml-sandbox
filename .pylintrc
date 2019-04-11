@@ -10,5 +10,6 @@ disable=
     too-many-locals,
     too-few-public-methods,
     relative-beyond-top-level,
+    import-error,
     # handled by black
     format
